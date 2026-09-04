@@ -1,0 +1,25 @@
+{
+  "name": "joshua-kimia-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "next": "^14.2.5",
+    "prisma": "^7.10.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "5.9.3"
+  }
+}
