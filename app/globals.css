@@ -9944,3 +9944,21 @@ html[data-theme="dark"]
   content: none !important;
   animation: none !important;
 }
+/* About section spacing */
+.about-stats {
+  margin-top: 32px;
+  margin-bottom: 28px;
+  padding-top: 24px;
+}
+
+.about-stats + * {
+  margin-top: 0;
+}
+
+.about-left {
+  gap: 24px;
+}
+
+.about-stat {
+  padding: 8px 14px;
+}
