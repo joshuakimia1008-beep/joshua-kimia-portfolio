@@ -38,7 +38,8 @@ const playfair = localFont({
 });
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://joshua-kimia.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://joshua-kimia-portfolio.vercel.app";
 
 const databaseId = process.env.APPWRITE_DATABASE_ID!;
 
