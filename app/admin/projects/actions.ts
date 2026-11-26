@@ -1,39 +1,100 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { ID } from "node-appwrite";
+import { tablesDB } from "@/lib/appwrite-server";
+import { requireAdmin } from "@/lib/auth";
+import {
+  uploadPortfolioImage,
+  deletePortfolioImage,
+} from "@/lib/appwrite-storage";
 import { revalidatePath } from "next/cache";
-import { writeFile } from "fs/promises";
-import path from "path";
+
+const databaseId = process.env.APPWRITE_DATABASE_ID!;
+const tableId = process.env.APPWRITE_PROJECTS_TABLE_ID!;
 
 export async function createProject(formData: FormData) {
-  const imageFile = formData.get("image") as File | null;
-  let imageUrl: string | null = null;
+  await requireAdmin();
 
-  if (imageFile && imageFile.size > 0) {
-    const bytes = await imageFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const filename = `${Date.now()}-${imageFile.name}`;
-    const filepath = path.join(process.cwd(), "public", "uploads", filename);
-    await writeFile(filepath, buffer);
-    imageUrl = `/uploads/${filename}`;
+  const imageFile = formData.get("image");
+
+  let uploaded: { fileId: string; imageUrl: string } | null = null;
+
+  if (imageFile && typeof imageFile !== "string" && imageFile.size > 0) {
+    uploaded = await uploadPortfolioImage(imageFile);
   }
 
-  await prisma.project.create({
-    data: {
-      title: formData.get("title") as string,
-      description: formData.get("description") as string,
-      imageUrl,
-      liveUrl: (formData.get("liveUrl") as string) || null,
-      repoUrl: (formData.get("repoUrl") as string) || null,
-      tags: formData.get("tags") as string,
-    },
-  });
+  const technologies = String(formData.get("tags") ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+
+  try {
+    await tablesDB.createRow({
+      databaseId,
+      tableId,
+      rowId: ID.unique(),
+      data: {
+        title: String(formData.get("title") ?? "").trim(),
+        description: String(formData.get("description") ?? "").trim(),
+        image: uploaded?.imageUrl ?? "",
+        liveUrl: String(formData.get("liveUrl") ?? ""),
+        githubUrl: String(formData.get("repoUrl") ?? ""),
+        technologies,
+        category: "Project",
+        featured: false,
+        displayOrder: 0,
+      },
+    });
+  } catch (error) {
+    if (uploaded) {
+      try {
+        await deletePortfolioImage(uploaded.fileId);
+      } catch (cleanupError) {
+        console.error("PROJECT IMAGE CLEANUP ERROR:", cleanupError);
+      }
+    }
+
+    throw error;
+  }
+
   revalidatePath("/admin/projects");
   revalidatePath("/");
 }
 
 export async function deleteProject(id: string) {
-  await prisma.project.delete({ where: { id } });
+  await requireAdmin();
+
+  await tablesDB.deleteRow({
+    databaseId,
+    tableId,
+    rowId: id,
+  });
+
+  revalidatePath("/admin/projects");
+  revalidatePath("/");
+}
+
+export async function updateProject(id: string, formData: FormData) {
+  await requireAdmin();
+
+  const technologies = String(formData.get("tags") ?? "")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+
+  await tablesDB.updateRow({
+    databaseId,
+    tableId,
+    rowId: id,
+    data: {
+      title: String(formData.get("title") ?? "").trim(),
+      description: String(formData.get("description") ?? "").trim(),
+      liveUrl: String(formData.get("liveUrl") ?? ""),
+      githubUrl: String(formData.get("repoUrl") ?? ""),
+      technologies,
+    },
+  });
+
   revalidatePath("/admin/projects");
   revalidatePath("/");
 }

@@ -1,63 +1,49 @@
-export default function Hero() {
+import { tablesDB } from "@/lib/appwrite-server";
+import HeroInteractive from "./HeroInteractive";
+import { parseProfileImageUrls } from "./profileImages";
+
+const databaseId = process.env.APPWRITE_DATABASE_ID!;
+const tableId = "settings";
+const rowId = "singleton";
+
+type HeroSettings = {
+  bio?: string | null;
+  profileImageUrl?: string | null;
+  resumeUrl?: string | null;
+  location?: string | null;
+  availability?: string | null;
+};
+
+export default async function Hero() {
+  let settings: HeroSettings | null = null;
+
+  try {
+    const row = await tablesDB.getRow({
+      databaseId,
+      tableId,
+      rowId,
+    });
+
+    settings = row as unknown as HeroSettings;
+  } catch (error) {
+    const isNotFound =
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === 404;
+
+    if (!isNotFound) {
+      throw error;
+    }
+  }
+
   return (
-    <section className="hero" id="home">
-      <div className="wrap hero-grid">
-        <div>
-          <div className="eyebrow">Hello, I&apos;m</div>
-
-          <h1>
-            Joshua Kimia<span className="accent">.</span>
-          </h1>
-
-          <div className="role">
-            Software Engineering Student &amp;{" "}
-            <span className="hl">Developer</span>
-          </div>
-
-          <p className="lede">
-            I build clean, scalable and user-focused web applications that solve
-            real problems.
-          </p>
-
-          <div className="hero-ctas">
-            <a className="btn btn-solid" href="#projects">
-              View Projects →
-            </a>
-
-            <a className="btn btn-line" href="#contact">
-              Download CV ↓
-            </a>
-          </div>
-
-          <div className="hero-tag">
-            <span className="pip"></span>
-            Software Engineering Student, African University of Science and
-            Technology
-          </div>
-        </div>
-
-        <div className="hero-photo-wrap">
-          <div className="deco deco-code">&lt;/&gt;</div>
-          <div className="deco deco-dots"></div>
-
-          <div className="hero-photo">
-            <svg
-              className="ph-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#5B6180"
-              strokeWidth={1.3}
-            >
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-            </svg>
-
-            <span className="ph-label">Portrait — replace with your photo</span>
-          </div>
-
-          <div className="deco deco-arrow">&gt;</div>
-        </div>
-      </div>
-    </section>
+    <HeroInteractive
+      bio={settings?.bio ?? null}
+      profileImageUrls={parseProfileImageUrls(settings?.profileImageUrl)}
+      resumeUrl={settings?.resumeUrl || "/Joshua-Kimia-CV.pdf"}
+      location={settings?.location ?? null}
+      availability={settings?.availability ?? "AVAILABLE"}
+    />
   );
 }

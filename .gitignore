@@ -6,3 +6,6 @@ out
 
 /generated/prisma
 .env
+dev.db
+*.tsbuildinfo
+/public/uploads/

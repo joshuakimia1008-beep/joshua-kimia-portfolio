@@ -1,41 +1,86 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { ID } from "node-appwrite";
+import { tablesDB } from "@/lib/appwrite-server";
+import { requireAdmin } from "@/lib/auth";
+import {
+  uploadPortfolioImage,
+  deletePortfolioImage,
+} from "@/lib/appwrite-storage";
 import { revalidatePath } from "next/cache";
-import { writeFile } from "fs/promises";
-import path from "path";
 
 export async function createCertification(formData: FormData) {
-  const expiryValue = formData.get("expiryDate") as string;
-  const imageFile = formData.get("image") as File | null;
+  await requireAdmin();
 
-  let imageUrl: string | null = null;
+  const title = String(formData.get("title") ?? "").trim();
+  const issuer = String(formData.get("issuer") ?? "").trim();
+  const issueDate = String(formData.get("issueDate") ?? "");
+  const expiryValue = String(formData.get("expiryDate") ?? "");
+  const credentialUrl = String(formData.get("credentialUrl") ?? "").trim();
 
-  if (imageFile && imageFile.size > 0) {
-    const bytes = await imageFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const filename = `${Date.now()}-${imageFile.name}`;
-    const filepath = path.join(process.cwd(), "public", "uploads", filename);
-    await writeFile(filepath, buffer);
-    imageUrl = `/uploads/${filename}`;
+  const imageFile = formData.get("image");
+
+  if (!title || !issuer || !issueDate) {
+    throw new Error("Title, issuer and issue date are required.");
   }
 
-  await prisma.certification.create({
-    data: {
-      title: formData.get("title") as string,
-      issuer: formData.get("issuer") as string,
-      issueDate: new Date(formData.get("issueDate") as string),
-      expiryDate: expiryValue ? new Date(expiryValue) : null,
-      credentialUrl: (formData.get("credentialUrl") as string) || null,
-      imageUrl,
-    },
-  });
+  let uploaded: { fileId: string; imageUrl: string } | null = null;
+
+  if (imageFile && typeof imageFile !== "string" && imageFile.size > 0) {
+    uploaded = await uploadPortfolioImage(imageFile);
+  }
+
+  const data: Record<string, unknown> = {
+    title,
+    issuer,
+    issueDate: new Date(`${issueDate}T00:00:00.000Z`).toISOString(),
+    displayOrder: Date.now(),
+  };
+
+  if (expiryValue) {
+    data.expiryDate = new Date(`${expiryValue}T00:00:00.000Z`).toISOString();
+  }
+
+  if (credentialUrl) {
+    data.credentialUrl = credentialUrl;
+  }
+
+  if (uploaded) {
+    data.imageUrl = uploaded.imageUrl;
+  }
+
+  try {
+    await tablesDB.createRow({
+      databaseId: process.env.APPWRITE_DATABASE_ID!,
+      tableId: process.env.APPWRITE_CERTIFICATIONS_TABLE_ID!,
+      rowId: ID.unique(),
+      data,
+    });
+  } catch (error) {
+    if (uploaded) {
+      try {
+        await deletePortfolioImage(uploaded.fileId);
+      } catch (cleanupError) {
+        console.error("CERTIFICATION IMAGE CLEANUP ERROR:", cleanupError);
+      }
+    }
+
+    throw error;
+  }
+
   revalidatePath("/admin/certifications");
   revalidatePath("/");
 }
 
 export async function deleteCertification(id: string) {
-  await prisma.certification.delete({ where: { id } });
+  await requireAdmin();
+
+  await tablesDB.deleteRow({
+    databaseId: process.env.APPWRITE_DATABASE_ID!,
+    tableId: process.env.APPWRITE_CERTIFICATIONS_TABLE_ID!,
+    rowId: id,
+  });
+
   revalidatePath("/admin/certifications");
   revalidatePath("/");
 }

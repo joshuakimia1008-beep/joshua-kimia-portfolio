@@ -9,9 +9,11 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import ScrollTop from "@/components/ScrollTop";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
-    <>
+    <div className="portfolio-site">
       <Header />
       <Hero />
       <About />
@@ -22,6 +24,6 @@ export default function Home() {
       <Contact />
       <Footer />
       <ScrollTop />
-    </>
+    </div>
   );
 }

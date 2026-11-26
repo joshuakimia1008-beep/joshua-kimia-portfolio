@@ -1,34 +1,63 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
+import AdminShell from "@/components/admin/AdminShell";
+import { getAdminAccount } from "@/lib/auth";
+import { tablesDB } from "@/lib/appwrite-server";
 
-const links = [
-  { href: "/admin/projects", label: "Projects" },
-  { href: "/admin/experience", label: "Experience" },
-  { href: "/admin/certifications", label: "Certifications" },
-  { href: "/admin/skills", label: "Skills" },
-  { href: "/admin/achievements", label: "Achievements" },
-];
+export const dynamic = "force-dynamic";
 
-export default function AdminLayout({
+const databaseId = process.env.APPWRITE_DATABASE_ID!;
+
+async function getAdminAppearance() {
+  try {
+    const row = await tablesDB.getRow({
+      databaseId,
+      tableId: "settings",
+      rowId: "singleton",
+    });
+
+    const settings = row as unknown as Record<string, unknown>;
+
+    const overlayValue = Number(settings.dashboardBackgroundOverlay ?? 42);
+    const blurValue = Number(settings.dashboardBackgroundBlur ?? 0);
+
+    return {
+      imageUrl:
+        typeof settings.dashboardBackgroundUrl === "string"
+          ? settings.dashboardBackgroundUrl
+          : "",
+      overlay: Number.isFinite(overlayValue)
+        ? Math.min(80, Math.max(0, overlayValue))
+        : 42,
+      blur: Number.isFinite(blurValue)
+        ? Math.min(12, Math.max(0, blurValue))
+        : 0,
+    };
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === 404
+    ) {
+      return { imageUrl: "", overlay: 42, blur: 0 };
+    }
+
+    throw error;
+  }
+}
+
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <nav
-        style={{ width: 200, padding: 16, borderRight: "1px solid #e2e8f0" }}
-      >
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            style={{ display: "block", padding: "8px 0" }}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
-      <main style={{ flex: 1, padding: 24 }}>{children}</main>
-    </div>
-  );
+  const user = await getAdminAccount();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const appearance = await getAdminAppearance();
+
+  return <AdminShell appearance={appearance}>{children}</AdminShell>;
 }

@@ -1,60 +1,49 @@
-﻿import { prisma } from "@/lib/prisma";
+﻿import { tablesDB } from "@/lib/appwrite-server";
 import Reveal from "./Reveal";
+import CertificationCarousel from "./CertificationCarousel";
+
+const credentialDate = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
 
 export default async function Certifications() {
-  const certifications = await prisma.certification.findMany({
-    orderBy: { order: "asc" },
+  const result = await tablesDB.listRows({
+    databaseId: process.env.APPWRITE_DATABASE_ID!,
+    tableId: process.env.APPWRITE_CERTIFICATIONS_TABLE_ID!,
+    queries: [],
   });
 
+  const certifications = result.rows.sort(
+    (a, b) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0),
+  );
+
   if (certifications.length === 0) return null;
+
+  const slides = certifications.map((cert) => ({
+    id: String(cert.$id),
+    title: String(cert.title),
+    issuer: String(cert.issuer),
+    imageUrl: cert.imageUrl ? String(cert.imageUrl) : "",
+    issueDate: credentialDate.format(new Date(String(cert.issueDate))),
+    expiryDate: cert.expiryDate
+      ? credentialDate.format(new Date(String(cert.expiryDate)))
+      : null,
+    credentialUrl: cert.credentialUrl ? String(cert.credentialUrl) : null,
+  }));
 
   return (
     <section className="certifications" id="certifications">
       <div className="wrap">
-        <Reveal>
+        <Reveal className="credential-intro">
           <div className="eyebrow">Certifications</div>
           <h2>Credentials I&apos;ve earned</h2>
+          <p>Proof of curiosity, craft, and the work behind the next idea.</p>
         </Reveal>
 
-        <Reveal className="cert-grid">
-          {certifications.map((cert) => (
-            <article className="cert-card" key={cert.id}>
-              {cert.imageUrl && (
-                <div className="cert-shot">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={cert.imageUrl} alt={`${cert.title} certificate`} />
-                </div>
-              )}
-
-              <div className="cert-body">
-                <h3>{cert.title}</h3>
-                <p className="cert-issuer">{cert.issuer}</p>
-                <p className="cert-dates">
-                  Issued{" "}
-                  {cert.issueDate.toLocaleDateString("en-US", {
-                    month: "long",
-                    year: "numeric",
-                  })}
-                  {cert.expiryDate &&
-                    ` · Expires ${cert.expiryDate.toLocaleDateString("en-US", {
-                      month: "long",
-                      year: "numeric",
-                    })}`}
-                </p>
-
-                {cert.credentialUrl && (
-                  <a
-                    className="cert-link"
-                    href={cert.credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Credential
-                  </a>
-                )}
-              </div>
-            </article>
-          ))}
+        <Reveal className="credential-reveal">
+          <CertificationCarousel certifications={slides} />
         </Reveal>
       </div>
     </section>

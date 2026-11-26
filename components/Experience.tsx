@@ -1,44 +1,35 @@
+import { tablesDB } from "@/lib/appwrite-server";
 import Reveal from "./Reveal";
+import TimelineProgress from "./TimelineProgress";
 
-type ExperienceItem = {
-  role: string;
-  organization: string;
-  period: string;
-  description: string;
-};
+function dateLabel(start: Date, end: Date | null) {
+  const format = (date: Date) =>
+    date.toLocaleDateString("en", {
+      month: "short",
+      year: "numeric",
+      timeZone: "UTC",
+    });
 
-type EducationItem = {
-  institution: string;
-  field: string;
-  period: string;
-};
+  return `${format(start)} — ${end ? format(end) : "Present"}`;
+}
 
-const experiences: ExperienceItem[] = [
-  {
-    role: "Software Engineering Intern",
-    organization: "Revlinks Integrated Services Limited",
-    period: "2026 — Present",
-    description:
-      "Gaining practical experience in software development and working on real-world projects in a professional team.",
-  },
-  {
-    role: "Campus Co-Lead",
-    organization: "Cowrywise Campus Ambassadors — AUST",
-    period: "2026 — Present",
-    description:
-      "Leading campus activities, coordinating ambassadors, and promoting financial literacy among students.",
-  },
-];
+export default async function Experience() {
+  const result = await tablesDB.listRows({
+    databaseId: process.env.APPWRITE_DATABASE_ID!,
+    tableId: process.env.APPWRITE_EXPERIENCE_TABLE_ID!,
+    queries: [],
+  });
 
-const education: EducationItem[] = [
-  {
-    institution: "African University of Science and Technology",
-    field: "Software Engineering",
-    period: "Undergraduate · Oct 2024 – Jul 2028",
-  },
-];
+  const entries = result.rows.sort(
+    (a, b) =>
+      new Date(String(b.startDate)).getTime() -
+      new Date(String(a.startDate)).getTime(),
+  );
 
-export default function Experience() {
+  const experiences = entries.filter((entry) => entry.type === "EXPERIENCE");
+
+  const education = entries.filter((entry) => entry.type === "EDUCATION");
+
   return (
     <section className="timeline" id="experience">
       <div className="wrap">
@@ -47,43 +38,63 @@ export default function Experience() {
           <p>Where I&apos;ve been learning, building, and growing.</p>
         </Reveal>
 
-        <Reveal className="tl-table">
-          <div className="tl-col">
-            <div className="tl-col-head">Experience</div>
+        {entries.length ? (
+          <Reveal className="tl-table">
+            <TimelineProgress />
 
-            {experiences.map((item) => (
-              <div
-                className="tl-entry"
-                key={`${item.role}-${item.organization}`}
-              >
-                <div className="role">{item.role}</div>
+            <div className="tl-col">
+              <div className="tl-col-head">Experience</div>
 
-                <div className="org">{item.organization}</div>
+              {experiences.length ? (
+                experiences.map((item) => (
+                  <article className="tl-entry" key={item.$id}>
+                    <div className="role">{String(item.title)}</div>
+                    <div className="org">{String(item.organization)}</div>
+                    <div className="when">
+                      {dateLabel(
+                        new Date(String(item.startDate)),
+                        item.endDate ? new Date(String(item.endDate)) : null,
+                      )}
+                    </div>
+                    {item.description && (
+                      <div className="desc">{String(item.description)}</div>
+                    )}
+                  </article>
+                ))
+              ) : (
+                <p className="admin-empty-state">No experience entries yet.</p>
+              )}
+            </div>
 
-                <div className="when">{item.period}</div>
+            <div className="tl-col edu-block">
+              <div className="tl-col-head">Education</div>
 
-                <div className="desc">{item.description}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="tl-col edu-block">
-            <div className="tl-col-head">Education</div>
-
-            {education.map((item) => (
-              <div
-                className="tl-entry"
-                key={`${item.institution}-${item.field}`}
-              >
-                <div className="role">{item.institution}</div>
-
-                <div className="org">{item.field}</div>
-
-                <div className="when">{item.period}</div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+              {education.length ? (
+                education.map((item) => (
+                  <article className="tl-entry" key={item.$id}>
+                    <div className="role">{String(item.title)}</div>
+                    <div className="org">{String(item.organization)}</div>
+                    <div className="when">
+                      {dateLabel(
+                        new Date(String(item.startDate)),
+                        item.endDate ? new Date(String(item.endDate)) : null,
+                      )}
+                    </div>
+                    {item.description && (
+                      <div className="desc">{String(item.description)}</div>
+                    )}
+                  </article>
+                ))
+              ) : (
+                <p className="admin-empty-state">No education entries yet.</p>
+              )}
+            </div>
+          </Reveal>
+        ) : (
+          <p className="admin-empty-state">
+            Add experience and education entries from the admin dashboard.
+          </p>
+        )}
       </div>
     </section>
   );

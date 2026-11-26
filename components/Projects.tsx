@@ -1,115 +1,48 @@
-"use client";
-
-import { useState } from "react";
+import { tablesDB } from "@/lib/appwrite-server";
 import Reveal from "./Reveal";
+import ProjectShowcase from "./ProjectShowcase";
 
-type Project = {
-  id: number;
-  image: string;
-  title: string;
-  description: string;
-  tags: string[];
-  link: string;
-};
+export default async function Projects() {
+  const result = await tablesDB.listRows({
+    databaseId: process.env.APPWRITE_DATABASE_ID!,
+    tableId: process.env.APPWRITE_PROJECTS_TABLE_ID!,
+    queries: [],
+  });
 
-// Drop real screenshots into /public/projects and this component will
-// automatically switch from the placeholder to the actual image — no
-// other code needs to change.
-const projects: Project[] = [
-  {
-    id: 1,
-    image: "/projects/citizens-college.png",
-    title: "Citizen's College",
-    description:
-      "An educational platform focused on making knowledge about journalism, public finance, Nigerian political history, and more accessible.",
-    tags: ["HTML", "CSS", "JavaScript"],
-    link: "#",
-  },
-  {
-    id: 2,
-    image: "/projects/nigeria-celebrates.png",
-    title: "Nigeria Celebrates",
-    description:
-      "A digital platform celebrating Nigeria, its people, culture, achievements, and stories.",
-    tags: ["HTML", "CSS", "JavaScript"],
-    link: "#",
-  },
-  {
-    id: 3,
-    image: "/projects/portfolio.png",
-    title: "My Portfolio",
-    description:
-      "My personal portfolio website showcasing my projects, skills, experience, and everything I'm learning.",
-    tags: ["Next.js", "TypeScript", "CSS"],
-    link: "#",
-  },
-];
+  const projects = result.rows
+    .sort((a, b) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
+    .map((project) => ({
+      id: project.$id,
+      title: project.title,
+      description: project.description,
+      imageUrl: project.image || null,
+      liveUrl: project.liveUrl || null,
+      repoUrl: project.githubUrl || null,
+      tags: Array.isArray(project.technologies)
+        ? project.technologies.join(", ")
+        : "",
+    }));
 
-function ProjectThumb({ src, title }: { src: string; title: string }) {
-  const [failed, setFailed] = useState(false);
-
-  if (failed) {
-    return (
-      <div className="p-shot p-shot-placeholder">
-        <span>{title.slice(0, 2).toUpperCase()}</span>
-        <p>Preview coming soon</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-shot">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={`${title} project preview`}
-        onError={() => setFailed(true)}
-      />
-    </div>
-  );
-}
-
-export default function Projects() {
   return (
     <section className="work" id="work">
       <div className="wrap">
-        <Reveal>
+        <Reveal className="section-intro project-intro">
           <div className="eyebrow">Projects</div>
           <h2>Things I&apos;ve built</h2>
+          <p>
+            Selected work. Pause the carousel by hovering, or explore with the
+            arrows, swipe, keyboard, or project markers.
+          </p>
         </Reveal>
 
         <Reveal className="project-grid">
-          {projects.map((project) => (
-            <article className="p-card" key={project.id}>
-              <ProjectThumb src={project.image} title={project.title} />
-
-              <div className="p-body">
-                <h3>{project.title}</h3>
-
-                <p>{project.description}</p>
-
-                <div className="p-tags">
-                  {project.tags.map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
-
-                <a
-                  className="p-link"
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View Project →
-                </a>
-              </div>
-            </article>
-          ))}
+          <ProjectShowcase projects={projects} />
         </Reveal>
 
-        <Reveal>
-          <a className="center-link" href="#work">
-            View All Projects →
+        <Reveal className="project-outro">
+          <a className="center-link" href="#contact">
+            Have a project in mind? Let&apos;s connect{" "}
+            <span aria-hidden="true">→</span>
           </a>
         </Reveal>
       </div>

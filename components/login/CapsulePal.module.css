@@ -1,0 +1,242 @@
+/* components/login/CapsulePal.module.css */
+
+.capsule {
+  --lx: 0;
+  --ly: 0;
+  --size: clamp(120px, 22vh, 220px);
+
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  flex: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.float {
+  position: absolute;
+  inset: 0;
+  animation: palFloat 6s ease-in-out infinite;
+}
+
+@keyframes palFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.glow {
+  position: absolute;
+  inset: -22%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 150, 120, 0.32),
+    transparent
+  );
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.capsule[data-expression="gasp"] .glow {
+  opacity: 1;
+  transform: scale(1.18);
+}
+
+.lean {
+  position: absolute;
+  inset: 0;
+  transform: perspective(900px) rotateY(calc(var(--lx) * 9deg))
+    rotateX(calc(var(--ly) * -7deg));
+  transform-style: preserve-3d;
+}
+
+/* The character */
+.pal {
+  position: absolute;
+  left: 14%;
+  top: 7%;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 28%, #ff9b7b, #ff6a42 55%, #e8512b);
+  box-shadow: inset -14px -18px 34px rgba(150, 30, 0, 0.35);
+  overflow: hidden;
+}
+
+.pal::before {
+  content: "";
+  position: absolute;
+  left: 22%;
+  top: 12%;
+  width: 26%;
+  height: 16%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  filter: blur(5px);
+  transform: rotate(-24deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  transform: translate(calc(var(--lx) * 11%), calc(var(--ly) * 8%));
+}
+
+.eye {
+  position: absolute;
+  top: 46%;
+  width: 17%;
+  height: 17%;
+  border-radius: 50%;
+  background: #f3ece4;
+  transition:
+    transform 0.16s ease,
+    height 0.16s ease,
+    background-color 0.16s ease,
+    border-radius 0.16s ease;
+}
+
+.eyeLeft {
+  left: 24%;
+}
+
+.eyeRight {
+  right: 24%;
+}
+
+.mouth {
+  position: absolute;
+  left: 50%;
+  top: 72%;
+  width: 9%;
+  height: 2.6%;
+  margin-left: -4.5%;
+  border-radius: 3px;
+  background: #2a1008;
+  transition:
+    width 0.18s ease,
+    height 0.18s ease,
+    margin-left 0.18s ease,
+    border-radius 0.18s ease,
+    background-color 0.18s ease;
+}
+
+/* Blink */
+.capsule[data-blink="true"] .eye {
+  transform: scaleY(0.1);
+}
+
+/* Happy: arched eyes + smile */
+.capsule[data-expression="happy"] .eye {
+  height: 9%;
+  background: transparent;
+  border-top: 3px solid #f3ece4;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  transform: translateY(2px);
+}
+
+.capsule[data-expression="happy"] .mouth {
+  width: 20%;
+  height: 8%;
+  margin-left: -10%;
+  background: transparent;
+  border-bottom: 2.5px solid #2a1008;
+  border-radius: 0 0 50% 50%;
+}
+
+/* Gasp: bigger eyes + "O" mouth */
+.capsule[data-expression="gasp"] .eye {
+  transform: scale(1.18);
+}
+
+.capsule[data-expression="gasp"] .mouth {
+  width: 10%;
+  height: 11%;
+  margin-left: -5%;
+  border-radius: 50%;
+}
+
+/* Glass */
+.shell {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 28%,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.03) 55%
+  );
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.16),
+    0 0 44px rgba(255, 255, 255, 0.12),
+    inset 0 0 30px rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.frost {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(215, 220, 232, 0.1),
+    rgba(200, 206, 222, 0.4)
+  );
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  clip-path: inset(66% 0 0 0);
+  transform: rotate(-14deg);
+  pointer-events: none;
+}
+
+.seam {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  top: 66%;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.75),
+    transparent
+  );
+  transform: rotate(-14deg);
+  pointer-events: none;
+}
+
+.shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -9%;
+  width: 86%;
+  height: 9%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 122, 85, 0.25),
+    transparent
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+
+  .lean,
+  .face,
+  .eye,
+  .mouth,
+  .glow {
+    transition: none;
+  }
+}
