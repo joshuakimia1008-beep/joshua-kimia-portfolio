@@ -10,20 +10,23 @@ export const dynamic = "force-dynamic";
 
 const databaseId = process.env.APPWRITE_DATABASE_ID!;
 
+const introduction =
+  "I'm Joshua Kimia, a Nigerian Software Engineering student and frontend developer passionate about building useful digital experiences and turning ideas into reality. Beyond tech, I enjoy leadership, entrepreneurship, financial literacy and community development.";
+
+const currently =
+  "Growing my skills, building projects and creating impact through technology and community involvement.";
+
 type Settings = {
-  bio?: string | null;
   profileImageUrl?: string | null;
   resumeUrl?: string | null;
-  availability?: string | null;
 };
 
 type ExperienceEntry = {
+  $id: string;
   type: string;
   title: string;
   organization: string;
-  description?: string | null;
   startDate?: string | null;
-  endDate?: string | null;
 };
 
 async function getSettings(): Promise<Settings | null> {
@@ -79,20 +82,19 @@ export default async function About() {
   ]);
 
   const education = entries.find((entry) => entry.type === "EDUCATION");
-  const current = entries.find((entry) => entry.type === "EXPERIENCE");
 
-  const bio =
-    settings?.bio ||
-    "I enjoy learning by building, exploring new technologies, and turning ideas into useful solutions.";
+  const experienceCount = entries.filter(
+    (entry) => entry.type === "EXPERIENCE",
+  ).length;
+
+  const profileImage =
+    parseProfileImageUrls(settings?.profileImageUrl)[0] || "/joshua-kimia.png";
 
   const resumeUrl = settings?.resumeUrl || "/Joshua-Kimia-CV.pdf";
 
   const stats = [
     { value: projects, label: "Projects" },
-    {
-      value: entries.filter((entry) => entry.type === "EXPERIENCE").length,
-      label: "Experience roles",
-    },
+    { value: experienceCount, label: "Experience roles" },
     { value: achievements, label: "Achievements" },
   ];
 
@@ -100,30 +102,22 @@ export default async function About() {
     {
       icon: "🎓",
       title: "Education",
-      heading: education?.title || "Add education in dashboard",
+      heading: education?.title || "Software Engineering",
       text: education
-        ? `${education.organization}${
-            education.endDate
-              ? ` · ${new Date(education.endDate).getFullYear()}`
-              : ""
-          }`
-        : "Your education entries appear here when added.",
+        ? education.organization
+        : "Learning, growing and building through technology.",
     },
     {
       icon: "💻",
       title: "Focus",
-      heading: "Current focus",
-      text: bio.slice(0, 130),
+      heading: "Software Engineering & Product Building",
+      text: "Frontend development, problem-solving and digital innovation.",
     },
     {
-      icon: "💼",
-      title: "Experience",
-      heading: current?.title || "Currently growing",
-      text:
-        current?.organization ||
-        (settings?.availability === "AVAILABLE"
-          ? "Open to new opportunities"
-          : "Building and learning every day"),
+      icon: "🤝",
+      title: "Leadership",
+      heading: "Technology & Community",
+      text: "Campus leadership, student engagement and community development.",
     },
   ];
 
@@ -138,24 +132,14 @@ export default async function About() {
         <div className="about-content">
           <Reveal className="about-left">
             <div className="about-intro">
-              <TiltImage
-                src={
-                  parseProfileImageUrls(settings?.profileImageUrl)[0] ||
-                  "/joshua-kimia.png"
-                }
-                alt="Joshua Kimia"
-              />
+              <TiltImage src={profileImage} alt="Joshua Kimia" />
 
               <div className="about-copy">
-                <p>{bio}</p>
+                <p>{introduction}</p>
 
-                {current && (
-                  <p>
-                    Currently: <strong>{current.title}</strong> at{" "}
-                    <strong>{current.organization}</strong>
-                    {current.description ? ` — ${current.description}` : ""}
-                  </p>
-                )}
+                <p>
+                  <strong>Currently:</strong> {currently}
+                </p>
               </div>
             </div>
 
@@ -177,6 +161,7 @@ export default async function About() {
             {cards.map((card) => (
               <div className="about-info-card" key={card.title}>
                 <div className="about-info-icon">{card.icon}</div>
+
                 <div className="about-info-content">
                   <span>{card.title}</span>
                   <strong>{card.heading}</strong>
