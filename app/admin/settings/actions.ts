@@ -65,7 +65,12 @@ async function saveFile(
     throw new Error(`${file.name} exceeds the 30 MB upload limit.`);
   }
 
-  const filename = storedFilename || file.name;
+  const originalFilename = storedFilename || file.name;
+
+  const filename = originalFilename
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .replace(/\.jpeg$/i, ".jpg");
+
   const extension = filename.split(".").pop()?.toLowerCase();
 
   if (!extension || !ALLOWED_EXTENSIONS.includes(extension)) {
