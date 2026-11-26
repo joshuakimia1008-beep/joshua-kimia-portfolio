@@ -40,7 +40,9 @@ export async function uploadPortfolioImage(file: File) {
     throw new Error("Invalid image file type.");
   }
 
-  const safeName = originalName.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const safeName = originalName
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .replace(/\.jpeg$/i, ".jpg");
 
   const fileId = ID.unique();
   const buffer = Buffer.from(await file.arrayBuffer());
