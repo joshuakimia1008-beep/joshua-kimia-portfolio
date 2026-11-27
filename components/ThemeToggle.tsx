@@ -10,12 +10,16 @@ export default function ThemeToggle() {
   useEffect(() => {
     const preference = window.matchMedia("(prefers-color-scheme: dark)");
     const syncTheme = () => {
-      setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+      setTheme(
+        document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+      );
     };
     const followSystem = () => {
       let hasSavedChoice = false;
       try {
-        hasSavedChoice = Boolean(window.localStorage.getItem("portfolio-theme"));
+        hasSavedChoice = Boolean(
+          window.localStorage.getItem("portfolio-theme"),
+        );
       } catch {
         // Ignore storage access restrictions and retain the in-page theme.
       }
@@ -52,11 +56,19 @@ export default function ThemeToggle() {
       title={isDark ? "Switch to light theme" : "Switch to dark theme"}
     >
       <span className="theme-toggle-track" aria-hidden="true">
-        <svg className="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none">
+        <svg
+          className="theme-icon theme-icon-sun"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
           <circle cx="12" cy="12" r="3.6" />
           <path d="M12 2.5v2M12 19.5v2M4.1 4.1l1.4 1.4m13 13 1.4 1.4M2.5 12h2m15 0h2M4.1 19.9l1.4-1.4m13-13 1.4-1.4" />
         </svg>
-        <svg className="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none">
+        <svg
+          className="theme-icon theme-icon-moon"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
           <path d="M19.8 15.2A8.4 8.4 0 0 1 8.8 4.2 8.6 8.6 0 1 0 19.8 15.2Z" />
           <path d="m16.5 4 .5 1.5 1.5.5-1.5.5-.5 1.5L16 6.5l-1.5-.5 1.5-.5.5-1.5Z" />
         </svg>

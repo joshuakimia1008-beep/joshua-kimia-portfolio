@@ -9962,3 +9962,2018 @@ html[data-theme="dark"]
 .about-stat {
   padding: 8px 14px;
 }
+/* ==========================================================
+   Mobile navigation + mobile theme toggle
+   PASTE AT THE VERY END of app/globals.css so it overrides the
+   old .focus-mobile-* rules. Desktop styles are not touched:
+   everything below is inside the max-width: 900px query
+   (change 900 here AND in HeaderNav.tsx if your desktop
+   breakpoint is different).
+   ========================================================== */
+
+.theme-fab,
+.focus-mobile-backdrop {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .focus-nav-header {
+    z-index: 1000;
+  }
+
+  /* hide desktop-only pieces on mobile (brand stays) */
+  .focus-nav-desktop,
+  .focus-nav-actions {
+    display: none !important;
+  }
+
+  /* ---------- MENU control: no box, no border, no background ---------- */
+  .focus-mobile-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 0 auto;
+    padding: 10px 0 10px 8px;
+    background: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .focus-mobile-toggle:focus {
+    outline: none;
+  }
+  .focus-mobile-toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  /* two clean lines */
+  .focus-menu-icon {
+    position: relative;
+    display: block;
+    width: 22px;
+    height: 10px;
+    font-size: 0;
+  }
+  .focus-menu-icon i {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition:
+      top 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .focus-menu-icon i:nth-child(1) {
+    top: 0;
+  }
+  .focus-menu-icon i:nth-child(2) {
+    top: 8px;
+  }
+  .menu-is-open .focus-menu-icon i:nth-child(1) {
+    top: 4px;
+    transform: rotate(45deg);
+  }
+  .menu-is-open .focus-menu-icon i:nth-child(2) {
+    top: 4px;
+    transform: rotate(-45deg);
+  }
+
+  /* ---------- tap-outside backdrop ---------- */
+  .focus-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    background: rgba(2, 6, 23, 0.28);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .focus-mobile-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ---------- floating blurred menu ---------- */
+  .focus-mobile-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    display: flex !important;
+    flex-direction: column;
+    gap: 2px;
+    max-height: calc(100dvh - 120px);
+    overflow-y: auto;
+    padding: 12px;
+    border-radius: 24px;
+    background: rgba(248, 250, 252, 0.72);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: 0 24px 60px rgba(2, 6, 23, 0.25);
+    transform-origin: top right;
+    transform: translateY(-8px) scale(0.96);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.25s ease,
+      visibility 0s linear 0.4s;
+  }
+  :root[data-theme="dark"] .focus-mobile-menu {
+    background: rgba(11, 31, 58, 0.72);
+    border-color: rgba(248, 250, 252, 0.12);
+  }
+  .focus-mobile-menu.mobile-menu-open {
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.25s ease,
+      visibility 0s;
+  }
+
+  /* links: roomy tap targets, staggered in */
+  .focus-mobile-menu > a:not(.focus-mobile-cv) {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    padding: 0 16px;
+    border-radius: 14px;
+    background: transparent;
+    border: 0;
+    color: #64748b;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      background 0.2s ease,
+      color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  :root[data-theme="dark"] .focus-mobile-menu > a:not(.focus-mobile-cv) {
+    color: #94a3b8;
+  }
+  .mobile-menu-open > a:not(.focus-mobile-cv) {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(var(--i, 0) * 40ms + 80ms);
+  }
+
+  /* active section */
+  .focus-mobile-menu > a.mobile-link-active {
+    color: #0f172a;
+    background: rgba(29, 78, 216, 0.1);
+  }
+  :root[data-theme="dark"] .focus-mobile-menu > a.mobile-link-active {
+    color: #f8fafc;
+    background: rgba(96, 165, 250, 0.16);
+  }
+  .focus-mobile-menu > a.mobile-link-active::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background: #1d4ed8;
+  }
+  :root[data-theme="dark"] .focus-mobile-menu > a.mobile-link-active::before {
+    background: #60a5fa;
+  }
+
+  .focus-mobile-cv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    margin-top: 10px;
+    border-radius: 14px;
+    background: #1d4ed8;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* ---------- theme toggle: independent, bottom-right ---------- */
+  .theme-fab {
+    position: fixed;
+    z-index: 800; /* under the menu backdrop (900): never overlaps the open menu */
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    background: rgba(248, 250, 252, 0.75);
+    color: #0f172a;
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.18);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  :root[data-theme="dark"] .theme-fab {
+    background: rgba(11, 31, 58, 0.75);
+    border-color: rgba(248, 250, 252, 0.14);
+    color: #f8fafc;
+  }
+  .theme-fab:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-mobile-menu,
+  .focus-mobile-menu > a,
+  .focus-mobile-backdrop,
+  .focus-menu-icon i {
+    transition: none !important;
+  }
+}
+/* ==========================================================
+   Mobile navigation + mobile theme toggle  (FINAL)
+   1. In app/globals.css DELETE the earlier block that starts with
+      "Mobile navigation + mobile theme toggle" (to the end of file).
+   2. Paste this whole file at the very END of globals.css.
+   Everything is inside max-width: 760px (your existing mobile
+   breakpoint), so desktop and tablet are untouched.
+   ========================================================== */
+
+.theme-fab,
+.focus-mobile-backdrop {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  /* theme-aware colours used below */
+  :root {
+    --m-ink: #0f172a;
+    --m-muted: #64748b;
+    --m-accent: #1d4ed8;
+    --m-glass: rgba(248, 250, 252, 0.72);
+    --m-glass-strong: rgba(248, 250, 252, 0.6);
+    --m-line: rgba(15, 23, 42, 0.1);
+    --m-active-bg: rgba(29, 78, 216, 0.1);
+  }
+  :root[data-theme="dark"] {
+    --m-ink: #f8fafc;
+    --m-muted: #94a3b8;
+    --m-accent: #60a5fa;
+    --m-glass: rgba(11, 31, 58, 0.72);
+    --m-glass-strong: rgba(11, 31, 58, 0.55);
+    --m-line: rgba(248, 250, 252, 0.14);
+    --m-active-bg: rgba(96, 165, 250, 0.16);
+  }
+
+  /* ---------- stand-alone bar: no pill ---------- */
+  .focus-nav-header {
+    top: 0 !important;
+    left: 0;
+    width: 100%;
+    padding: 0 !important;
+    z-index: 1000;
+    background: transparent !important;
+    transition: background 0.3s ease;
+  }
+  .focus-nav-header.is-scrolled {
+    background: var(--m-glass-strong) !important;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .focus-nav {
+    position: relative;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    padding: 12px 20px;
+    padding-top: calc(12px + env(safe-area-inset-top));
+    gap: 8px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .focus-nav-brand {
+    color: var(--m-ink);
+    font-size: 14px;
+  }
+  .focus-nav-brand span {
+    color: var(--m-accent);
+  }
+
+  /* desktop-only pieces */
+  .focus-nav-desktop,
+  .focus-nav-actions {
+    display: none !important;
+  }
+
+  /* ---------- MENU control: no box ---------- */
+  .focus-mobile-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 0;
+    margin-left: auto;
+    padding: 10px 0 10px 8px;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--m-ink);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .focus-mobile-toggle:focus {
+    outline: none;
+  }
+  .focus-mobile-toggle:focus-visible {
+    outline: 2px solid var(--m-accent);
+    outline-offset: 4px;
+  }
+
+  /* two clean lines */
+  .focus-menu-icon {
+    position: relative;
+    display: block;
+    width: 22px;
+    height: 10px;
+    font-size: 0;
+  }
+  .focus-menu-icon i {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition:
+      top 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .focus-menu-icon i:nth-child(1) {
+    top: 0;
+  }
+  .focus-menu-icon i:nth-child(2) {
+    top: 8px;
+  }
+  .menu-is-open .focus-menu-icon i:nth-child(1) {
+    top: 4px;
+    transform: rotate(45deg);
+  }
+  .menu-is-open .focus-menu-icon i:nth-child(2) {
+    top: 4px;
+    transform: rotate(-45deg);
+  }
+
+  /* ---------- tap-outside backdrop ---------- */
+  .focus-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    background: rgba(2, 6, 23, 0.28);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .focus-mobile-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ---------- floating blurred menu ---------- */
+  .focus-mobile-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: calc(100dvh - 110px);
+    overflow-y: auto;
+    padding: 12px;
+    border: 1px solid var(--m-line);
+    border-radius: 24px;
+    background: var(--m-glass);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: 0 24px 60px rgba(2, 6, 23, 0.25);
+    transform-origin: top right;
+    transform: translateY(-8px) scale(0.96);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.25s ease,
+      visibility 0s linear 0.4s;
+  }
+  .focus-mobile-menu.mobile-menu-open {
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.25s ease,
+      visibility 0s;
+  }
+
+  /* links: roomy, staggered in */
+  .focus-mobile-menu > a:not(.focus-mobile-cv) {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--m-muted);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      background 0.2s ease,
+      color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .focus-mobile-menu.mobile-menu-open > a:not(.focus-mobile-cv) {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(var(--i, 0) * 40ms + 80ms);
+  }
+
+  /* active section */
+  .focus-mobile-menu > a.mobile-link-active {
+    color: var(--m-ink);
+    background: var(--m-active-bg);
+  }
+  .focus-mobile-menu > a.mobile-link-active::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background: var(--m-accent);
+  }
+
+  .focus-mobile-menu > .focus-mobile-cv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    margin-top: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 14px;
+    background: #1d4ed8;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* ---------- theme toggle: independent, bottom-right ---------- */
+  .theme-fab {
+    position: fixed;
+    z-index: 800; /* below the menu backdrop (900): never overlaps the open menu */
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid var(--m-line);
+    border-radius: 50%;
+    background: var(--m-glass);
+    color: var(--m-ink);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.18);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .theme-fab:focus-visible {
+    outline: 2px solid var(--m-accent);
+    outline-offset: 3px;
+  }
+
+  /* keep it clear of the scroll-to-top button (bottom-right, 42px) */
+  .scroll-top {
+    bottom: 76px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-mobile-menu,
+  .focus-mobile-menu > a,
+  .focus-mobile-backdrop,
+  .focus-menu-icon i,
+  .focus-nav-header {
+    transition: none !important;
+  }
+}
+/* ==========================================================
+   Experience & Education: remove centre divider, animate the
+   line beside each column instead.
+   Paste at the very END of app/globals.css.
+   ========================================================== */
+
+/* the old centre line */
+.timeline-track {
+  display: none !important;
+}
+
+.tl-col {
+  position: relative;
+}
+
+/* dots sit above the animated line */
+.timeline .tl-entry::before {
+  z-index: 2;
+}
+
+/* animated fill, drawn over the grey line between the dots */
+.tl-line-fill {
+  position: absolute;
+  left: 3.5px;
+  width: 2px;
+  z-index: 1;
+  border-radius: 2px;
+  pointer-events: none;
+  transform: scaleY(var(--col-progress, 0));
+  transform-origin: top;
+  background: linear-gradient(var(--section-accent, #5d81ff), #8bb9c2);
+  box-shadow: 0 0 12px rgba(77, 126, 139, 0.3);
+  will-change: transform;
+}
+
+html[data-theme="dark"] .tl-line-fill {
+  background: linear-gradient(#5d81ff, #66dbf3);
+  box-shadow: 0 0 14px rgba(104, 186, 255, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-line-fill {
+    transform: scaleY(1);
+  }
+}
+/* ==========================================================
+   Experience & Education: remove centre divider, animate the
+   line beside each column instead.
+   Paste at the very END of app/globals.css.
+   ========================================================== */
+
+/* the old centre line */
+.timeline-track {
+  display: none !important;
+}
+
+.tl-col {
+  position: relative;
+}
+
+/* dots sit above the animated line */
+.timeline .tl-entry::before {
+  z-index: 2;
+}
+
+/* animated fill, drawn over the grey line between the dots */
+.tl-line-fill {
+  position: absolute;
+  left: 3.5px;
+  width: 2px;
+  z-index: 1;
+  border-radius: 2px;
+  pointer-events: none;
+  transform: scaleY(var(--col-progress, 0));
+  transform-origin: top;
+  background: linear-gradient(var(--section-accent, #5d81ff), #8bb9c2);
+  box-shadow: 0 0 12px rgba(77, 126, 139, 0.3);
+  will-change: transform;
+}
+
+html[data-theme="dark"] .tl-line-fill {
+  background: linear-gradient(#5d81ff, #66dbf3);
+  box-shadow: 0 0 14px rgba(104, 186, 255, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-line-fill {
+    transform: scaleY(1);
+  }
+}
+
+/* ==========================================================
+   Milestone scroll: entries wake up as the line reaches them
+   ========================================================== */
+
+/* before the line arrives: dimmed, slightly lowered, grey dot */
+.timeline .tl-entry {
+  opacity: 0.38;
+  transform: translateY(10px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.timeline .tl-entry::before {
+  background: #94a3b8;
+  transition:
+    background 0.4s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.4s ease;
+}
+
+/* reached: full opacity, dot fills + pops with a soft ring */
+.timeline .tl-entry.is-reached {
+  opacity: 1;
+  transform: none;
+}
+.timeline .tl-entry.is-reached::before {
+  background: var(--section-accent, #1d4ed8);
+  transform: scale(1.35);
+  box-shadow: 0 0 0 5px rgba(77, 126, 139, 0.18);
+}
+html[data-theme="dark"] .timeline .tl-entry.is-reached::before {
+  background: #66dbf3;
+  box-shadow:
+    0 0 0 5px rgba(102, 219, 243, 0.2),
+    0 0 14px #68baff;
+}
+
+/* stagger the text inside a newly reached milestone */
+.timeline .tl-entry .when,
+.timeline .tl-entry .org,
+.timeline .tl-entry .desc {
+  transition:
+    opacity 0.5s ease 0.1s,
+    transform 0.5s ease 0.1s;
+}
+.timeline .tl-entry:not(.is-reached) .when,
+.timeline .tl-entry:not(.is-reached) .org,
+.timeline .tl-entry:not(.is-reached) .desc {
+  opacity: 0.6;
+  transform: translateY(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline .tl-entry,
+  .timeline .tl-entry .when,
+  .timeline .tl-entry .org,
+  .timeline .tl-entry .desc {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+/* ==========================================================
+   Floating tech tiles behind the skill modal
+   Paste at the END of app/globals.css
+   ========================================================== */
+
+/* darker backdrop so the tiles pop (replaces the light navy wash) */
+.skill-modal-overlay {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(10, 16, 30, 0.9),
+    rgba(4, 7, 14, 0.95)
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.skill-modal {
+  z-index: 2; /* modal always above the tiles */
+}
+
+.float-tiles {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none; /* only the tiles themselves are clickable */
+  overflow: hidden;
+}
+
+.float-tile-wrap {
+  position: absolute;
+  animation: floatTileDrift var(--dur, 7s) ease-in-out var(--delay, 0s) infinite
+    alternate;
+  will-change: transform;
+}
+.float-tile-wrap.is-open {
+  z-index: 5;
+}
+
+@keyframes floatTileDrift {
+  0% {
+    transform: translate3d(calc(var(--dx) * -1), calc(var(--dy) * -1), 0)
+      rotate(calc(var(--rot) - 3deg));
+  }
+  100% {
+    transform: translate3d(var(--dx), var(--dy), 0)
+      rotate(calc(var(--rot) + 3deg));
+  }
+}
+
+.float-tile {
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 24%;
+  cursor: pointer;
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.float-tile:hover {
+  transform: scale(1.12);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+.float-tile:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* chip that pops out beside the tile */
+.float-chip {
+  position: absolute;
+  top: 50%;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  animation: floatChipIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.float-chip em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+.float-chip-right {
+  left: calc(100% + 10px);
+  transform-origin: left center;
+}
+.float-chip-left {
+  right: calc(100% + 10px);
+  transform-origin: right center;
+}
+
+@keyframes floatChipIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-tile-wrap {
+    animation: none;
+    transform: rotate(var(--rot));
+  }
+  .float-chip {
+    animation: none;
+    transform: translateY(-50%);
+  }
+}
+
+/* ---------- phones: leave a strip above the sheet for the tiles ---------- */
+@media (max-width: 600px) {
+  .skill-modal {
+    max-height: 76dvh;
+  }
+  .float-tile:hover {
+    transform: none; /* no sticky hover scale on touch */
+  }
+  .float-chip {
+    font-size: 12px;
+    padding: 7px 11px;
+  }
+}
+@media (max-width: 600px) and (max-height: 560px) {
+  /* short landscape phones: modal is tall relative to screen, hide tiles */
+  .float-tiles {
+    display: none;
+  }
+}
+/* ==========================================================================
+   SKILLS UPGRADE — glitch-tag labels + linear progress rows + tech icons
+   Paste at the VERY END of app/globals.css.
+   ========================================================================== */
+
+/* ---------- tech icons (shared) ---------- */
+.skill-icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  vertical-align: middle;
+}
+.skill-icon-tile {
+  border-radius: 24%;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.skill-icon-mono {
+  border-radius: 24%;
+  background: #1d4ed8;
+  color: #fff;
+  font-family: var(--font-inter), Inter, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* modal header / related tags */
+.skill-modal-icon {
+  border: 0;
+  background: transparent;
+}
+.skill-tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ==========================================================================
+   GLITCH TAG  (labels)
+   ========================================================================== */
+.skill-row {
+  gap: 14px;
+}
+
+.glitch-tag {
+  --tag-accent: #38bdf8;
+  --gd: 0s;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 11px 20px 11px 16px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--tag-accent) 48%, transparent);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #060a13, #0d1525);
+  color: #e8f1fb;
+  font-family: var(--font-inter), Inter, sans-serif;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 10px 24px color-mix(in srgb, var(--tag-accent) 16%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--tag-accent) 9%, transparent);
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.75, 0.25, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.glitch-tag:hover {
+  transform: translateY(-4px);
+  border-color: var(--tag-accent);
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--tag-accent) 30%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--tag-accent) 16%, transparent);
+}
+.glitch-tag:focus-visible {
+  outline: 2px solid var(--tag-accent);
+  outline-offset: 3px;
+}
+
+/* grid texture */
+.gt-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--tag-accent) 15%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--tag-accent) 15%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 12px 12px;
+  -webkit-mask-image: radial-gradient(
+    ellipse at 75% 50%,
+    #000 0%,
+    transparent 85%
+  );
+  mask-image: radial-gradient(ellipse at 75% 50%, #000 0%, transparent 85%);
+}
+
+/* noise overlay */
+.gt-noise {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* scanner light */
+.gt-scan {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -50%;
+  z-index: -1;
+  width: 42%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--tag-accent) 38%, transparent),
+    transparent
+  );
+  transform: skewX(-18deg);
+  animation: gtScan 3.8s linear var(--gd) infinite;
+}
+@keyframes gtScan {
+  0% {
+    left: -50%;
+  }
+  60%,
+  100% {
+    left: 130%;
+  }
+}
+
+/* corner brackets */
+.gt-corner {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 0 solid var(--tag-accent);
+  pointer-events: none;
+  opacity: 0.9;
+  transition:
+    width 0.25s ease,
+    height 0.25s ease;
+}
+.gt-corner.tl {
+  top: 4px;
+  left: 4px;
+  border-width: 1.5px 0 0 1.5px;
+}
+.gt-corner.tr {
+  top: 4px;
+  right: 4px;
+  border-width: 1.5px 1.5px 0 0;
+}
+.gt-corner.bl {
+  bottom: 4px;
+  left: 4px;
+  border-width: 0 0 1.5px 1.5px;
+}
+.gt-corner.br {
+  right: 4px;
+  bottom: 4px;
+  border-width: 0 1.5px 1.5px 0;
+}
+.glitch-tag:hover .gt-corner {
+  width: 12px;
+  height: 12px;
+}
+
+/* content */
+.gt-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.gt-icon {
+  filter: drop-shadow(
+    0 0 7px color-mix(in srgb, var(--tag-accent) 60%, transparent)
+  );
+}
+.gt-icon.skill-icon-mono {
+  filter: none;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--tag-accent) 28%, #060a13);
+  border: 1px solid color-mix(in srgb, var(--tag-accent) 50%, transparent);
+  color: #fff;
+}
+.gt-text {
+  display: grid;
+  gap: 3px;
+}
+.gt-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 10px;
+}
+.gt-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tag-accent);
+  box-shadow: 0 0 9px var(--tag-accent);
+  animation: gtBlink 1.3s ease-in-out infinite;
+}
+@keyframes gtBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+.gt-prefix {
+  color: var(--tag-accent);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+.gt-code {
+  color: #8da3bb;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+/* glitch text */
+.gt-label {
+  position: relative;
+  display: inline-block;
+  color: #f4f8fd;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+.gt-label::before,
+.gt-label::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+.gt-label::before {
+  color: #22e6ff;
+  animation: gtGlitchA 4.8s steps(1, end) var(--gd) infinite;
+}
+.gt-label::after {
+  color: #ff2e93;
+  animation: gtGlitchB 4.8s steps(1, end) var(--gd) infinite;
+}
+.glitch-tag:hover .gt-label::before {
+  animation-duration: 0.9s;
+}
+.glitch-tag:hover .gt-label::after {
+  animation-duration: 0.9s;
+}
+@keyframes gtGlitchA {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+  89% {
+    opacity: 0.95;
+    transform: translate(-2px, 0);
+    clip-path: inset(8% 0 58% 0);
+  }
+  92% {
+    opacity: 0.95;
+    transform: translate(2px, 0);
+    clip-path: inset(62% 0 6% 0);
+  }
+  95% {
+    opacity: 0.95;
+    transform: translate(-1px, 0);
+    clip-path: inset(34% 0 30% 0);
+  }
+}
+@keyframes gtGlitchB {
+  0%,
+  89%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+  90% {
+    opacity: 0.9;
+    transform: translate(2px, 0);
+    clip-path: inset(50% 0 20% 0);
+  }
+  93% {
+    opacity: 0.9;
+    transform: translate(-2px, 0);
+    clip-path: inset(10% 0 66% 0);
+  }
+  96% {
+    opacity: 0.9;
+    transform: translate(1px, 0);
+    clip-path: inset(70% 0 4% 0);
+  }
+}
+
+@media (max-width: 600px) {
+  .skill-row {
+    gap: 10px;
+  }
+  .glitch-tag {
+    min-height: 50px;
+    padding: 9px 15px 9px 12px;
+  }
+  .gt-label {
+    font-size: 14px;
+  }
+  .gt-body {
+    gap: 10px;
+  }
+}
+
+/* ==========================================================================
+   LINEAR PROGRESS CARD  (bars)
+   ========================================================================== */
+.lp-card {
+  display: grid;
+  gap: 2px;
+  margin-top: 30px;
+  padding: clamp(14px, 2.4vw, 26px);
+  border: 1px solid color-mix(in srgb, var(--navy) 10%, transparent);
+  border-radius: 20px;
+  background: var(--white);
+  box-shadow: 0 18px 50px rgba(11, 31, 58, 0.07);
+}
+.lp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 8px 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--navy) 8%, transparent);
+}
+.lp-head strong {
+  color: var(--navy);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.lp-head span {
+  color: var(--slate);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lp-row {
+  --accent: #60a5fa;
+  --i: 0;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  padding: 11px 8px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.lp-row:hover {
+  background: color-mix(in srgb, var(--navy) 4%, transparent);
+}
+.lp-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.lp-main {
+  display: block;
+  min-width: 0;
+}
+.lp-top {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.lp-name {
+  overflow: hidden;
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lp-meta {
+  color: var(--slate);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.lp-val {
+  margin-left: auto;
+  color: var(--navy);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-track {
+  position: relative;
+  display: block;
+  height: 8px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--navy) 9%, transparent);
+}
+.lp-fill {
+  position: relative;
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 55%, #0b1f3a),
+    var(--accent)
+  );
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 38%, transparent);
+  transition: width 1.3s cubic-bezier(0.2, 0.75, 0.25, 1) calc(var(--i) * 90ms);
+}
+.reveal.in .lp-fill {
+  width: var(--w);
+}
+
+/* A — gradient + soft glow cap */
+.lp-row[data-variant="gradient"] .lp-fill::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  transform: translate(50%, -50%);
+}
+
+/* B — shimmer + glowing line cap */
+.lp-row[data-variant="shimmer"] .lp-fill {
+  background:
+    linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.55) 50%,
+      transparent 70%
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 55%, #0b1f3a),
+      var(--accent)
+    );
+  background-size:
+    220% 100%,
+    100% 100%;
+  background-position:
+    120% 0,
+    0 0;
+  animation: lpShimmer 2.2s linear infinite;
+}
+.lp-row[data-variant="shimmer"] .lp-fill::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow:
+    0 0 10px var(--accent),
+    0 0 20px var(--accent);
+  transform: translate(50%, -50%);
+}
+@keyframes lpShimmer {
+  from {
+    background-position:
+      120% 0,
+      0 0;
+  }
+  to {
+    background-position:
+      -120% 0,
+      0 0;
+  }
+}
+
+/* C — segmented with milestone dividers */
+.lp-row[data-variant="segmented"] .lp-track {
+  height: 10px;
+}
+.lp-row[data-variant="segmented"] .lp-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent calc(25% - 2px),
+    var(--white) calc(25% - 2px),
+    var(--white) 25%
+  );
+}
+
+/* D — dot cap indicator */
+.lp-row[data-variant="dot"] .lp-fill::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--white);
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 4px 12px color-mix(in srgb, var(--accent) 55%, transparent);
+  transform: translate(50%, -50%);
+}
+
+@media (max-width: 600px) {
+  .lp-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 11px;
+    padding: 10px 4px;
+  }
+  .lp-row .skill-icon {
+    width: 34px !important;
+    height: 34px !important;
+  }
+  .lp-meta {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gt-scan,
+  .gt-dot,
+  .gt-label::before,
+  .gt-label::after,
+  .lp-row[data-variant="shimmer"] .lp-fill {
+    animation: none !important;
+  }
+  .lp-fill {
+    transition: none !important;
+  }
+}
+/* ==========================================================================
+   SKILLS UPGRADE — glitch-tag labels + linear progress rows + tech icons
+   Paste at the VERY END of app/globals.css.
+   ========================================================================== */
+
+/* ---------- tech icons (shared) ---------- */
+.skill-icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  vertical-align: middle;
+}
+.skill-icon-tile {
+  border-radius: 24%;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.skill-icon-mono {
+  border-radius: 24%;
+  background: #1d4ed8;
+  color: #fff;
+  font-family: var(--font-inter), Inter, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* modal header / related tags */
+.skill-modal-icon {
+  border: 0;
+  background: transparent;
+}
+.skill-tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ==========================================================================
+   GLITCH TAG  (labels)
+   ========================================================================== */
+.skill-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 232px), 1fr));
+  gap: 16px;
+}
+
+.glitch-tag {
+  --tag-accent: #38bdf8;
+  --gd: 0s;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 60px;
+  padding: 11px 20px 11px 16px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--tag-accent) 48%, transparent);
+  border-radius: 6px;
+  background: linear-gradient(135deg, #060a13, #0d1525);
+  color: #e8f1fb;
+  font-family: var(--font-inter), Inter, sans-serif;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 10px 24px color-mix(in srgb, var(--tag-accent) 16%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--tag-accent) 9%, transparent);
+  transition:
+    transform 0.25s cubic-bezier(0.2, 0.75, 0.25, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.glitch-tag:hover {
+  transform: translateY(-4px);
+  border-color: var(--tag-accent);
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--tag-accent) 30%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--tag-accent) 16%, transparent);
+}
+.glitch-tag:focus-visible {
+  outline: 2px solid var(--tag-accent);
+  outline-offset: 3px;
+}
+
+/* grid texture */
+.gt-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--tag-accent) 15%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--tag-accent) 15%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 12px 12px;
+  -webkit-mask-image: radial-gradient(
+    ellipse at 75% 50%,
+    #000 0%,
+    transparent 85%
+  );
+  mask-image: radial-gradient(ellipse at 75% 50%, #000 0%, transparent 85%);
+}
+
+/* noise overlay */
+.gt-noise {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* scanner light */
+.gt-scan {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -50%;
+  z-index: -1;
+  width: 42%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--tag-accent) 38%, transparent),
+    transparent
+  );
+  transform: skewX(-18deg);
+  animation: gtScan 3.8s linear var(--gd) infinite;
+}
+@keyframes gtScan {
+  0% {
+    left: -50%;
+  }
+  60%,
+  100% {
+    left: 130%;
+  }
+}
+
+/* corner brackets */
+.gt-corner {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 0 solid var(--tag-accent);
+  pointer-events: none;
+  opacity: 0.9;
+  transition:
+    width 0.25s ease,
+    height 0.25s ease;
+}
+.gt-corner.tl {
+  top: 4px;
+  left: 4px;
+  border-width: 1.5px 0 0 1.5px;
+}
+.gt-corner.tr {
+  top: 4px;
+  right: 4px;
+  border-width: 1.5px 1.5px 0 0;
+}
+.gt-corner.bl {
+  bottom: 4px;
+  left: 4px;
+  border-width: 0 0 1.5px 1.5px;
+}
+.gt-corner.br {
+  right: 4px;
+  bottom: 4px;
+  border-width: 0 1.5px 1.5px 0;
+}
+.glitch-tag:hover .gt-corner {
+  width: 12px;
+  height: 12px;
+}
+
+/* content */
+.gt-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.gt-icon {
+  filter: drop-shadow(
+    0 0 7px color-mix(in srgb, var(--tag-accent) 60%, transparent)
+  );
+}
+.gt-icon.skill-icon-mono {
+  filter: none;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--tag-accent) 28%, #060a13);
+  border: 1px solid color-mix(in srgb, var(--tag-accent) 50%, transparent);
+  color: #fff;
+}
+.gt-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.gt-code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gt-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 10px;
+}
+.gt-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tag-accent);
+  box-shadow: 0 0 9px var(--tag-accent);
+  animation: gtBlink 1.3s ease-in-out infinite;
+}
+@keyframes gtBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+.gt-prefix {
+  color: var(--tag-accent);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+.gt-code {
+  color: #8da3bb;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+/* glitch text */
+.gt-label {
+  position: relative;
+  display: inline-block;
+  color: #f4f8fd;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+.gt-label::before,
+.gt-label::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+.gt-label::before {
+  color: #22e6ff;
+  animation: gtGlitchA 4.8s steps(1, end) var(--gd) infinite;
+}
+.gt-label::after {
+  color: #ff2e93;
+  animation: gtGlitchB 4.8s steps(1, end) var(--gd) infinite;
+}
+.glitch-tag:hover .gt-label::before {
+  animation-duration: 0.9s;
+}
+.glitch-tag:hover .gt-label::after {
+  animation-duration: 0.9s;
+}
+@keyframes gtGlitchA {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+  89% {
+    opacity: 0.95;
+    transform: translate(-2px, 0);
+    clip-path: inset(8% 0 58% 0);
+  }
+  92% {
+    opacity: 0.95;
+    transform: translate(2px, 0);
+    clip-path: inset(62% 0 6% 0);
+  }
+  95% {
+    opacity: 0.95;
+    transform: translate(-1px, 0);
+    clip-path: inset(34% 0 30% 0);
+  }
+}
+@keyframes gtGlitchB {
+  0%,
+  89%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+  90% {
+    opacity: 0.9;
+    transform: translate(2px, 0);
+    clip-path: inset(50% 0 20% 0);
+  }
+  93% {
+    opacity: 0.9;
+    transform: translate(-2px, 0);
+    clip-path: inset(10% 0 66% 0);
+  }
+  96% {
+    opacity: 0.9;
+    transform: translate(1px, 0);
+    clip-path: inset(70% 0 4% 0);
+  }
+}
+
+@media (max-width: 600px) {
+  .skill-row {
+    gap: 12px;
+  }
+  .glitch-tag {
+    min-height: 50px;
+    padding: 9px 15px 9px 12px;
+  }
+  .gt-label {
+    font-size: 14px;
+  }
+  .gt-body {
+    gap: 10px;
+  }
+}
+
+/* ==========================================================================
+   SCALING — the section stays a fixed height however many skills you add
+   ========================================================================== */
+
+/* ---- tags: wrap, then scroll inside a box once expanded ---- */
+.skill-row.is-expanded {
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 6px 6px 10px;
+  margin: -6px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.skill-more-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  padding: 0 20px;
+  border: 1px dashed color-mix(in srgb, var(--navy) 35%, transparent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--navy);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+.skill-more-tag:hover {
+  transform: translateY(-3px);
+  border-color: var(--dark-blue);
+  background: color-mix(in srgb, var(--dark-blue) 8%, transparent);
+}
+.skill-more-tag:focus-visible {
+  outline: 2px solid var(--dark-blue);
+  outline-offset: 3px;
+}
+
+/* tags past the limit: animations only wake up on hover (keeps phones smooth) */
+.glitch-tag.gt-lite .gt-scan,
+.glitch-tag.gt-lite .gt-dot,
+.glitch-tag.gt-lite .gt-label::before,
+.glitch-tag.gt-lite .gt-label::after {
+  animation: none;
+}
+.glitch-tag.gt-lite:hover .gt-scan {
+  animation: gtScan 3.8s linear infinite;
+}
+.glitch-tag.gt-lite:hover .gt-label::before {
+  animation: gtGlitchA 0.9s steps(1, end) infinite;
+}
+.glitch-tag.gt-lite:hover .gt-label::after {
+  animation: gtGlitchB 0.9s steps(1, end) infinite;
+}
+/* off-screen tags aren't painted at all */
+.glitch-tag {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 160px 56px;
+}
+
+/* ==========================================================================
+   ELECTRIC REVEAL  — tags strike in one after another when scrolled into view
+   ========================================================================== */
+.reveal:not(.in) .skill-row .glitch-tag {
+  opacity: 0;
+}
+
+/* energy sweep + jagged lightning (pseudo-elements, hidden until the reveal) */
+.glitch-tag::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: 0;
+  z-index: 6;
+  width: 3px;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow:
+    0 0 10px 3px var(--tag-accent),
+    0 0 28px 8px var(--tag-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+.glitch-tag::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40' preserveAspectRatio='none'><polyline points='0,22 9,12 17,27 27,8 36,25 46,10 55,29 66,9 76,26 87,13 100,20' fill='none' stroke='white' stroke-width='1.6' vector-effect='non-scaling-stroke' stroke-linejoin='round'/></svg>");
+  filter: drop-shadow(0 0 4px var(--tag-accent))
+    drop-shadow(0 0 10px var(--tag-accent));
+}
+
+.reveal.in .skill-row .glitch-tag {
+  animation: gtElectric 1s cubic-bezier(0.2, 0.75, 0.25, 1) backwards;
+  animation-delay: calc(var(--ei, 0) * 90ms);
+}
+.reveal.in .skill-row .glitch-tag::before {
+  animation: gtSweep 1s cubic-bezier(0.2, 0.75, 0.25, 1) backwards;
+  animation-delay: calc(var(--ei, 0) * 90ms);
+}
+.reveal.in .skill-row .glitch-tag::after {
+  animation: gtBolt 1s linear backwards;
+  animation-delay: calc(var(--ei, 0) * 90ms);
+}
+
+@keyframes gtElectric {
+  0% {
+    opacity: 0;
+    clip-path: inset(-30px 100% -30px -30px);
+    filter: brightness(3.2) saturate(1.6);
+    transform: translateX(-4px) skewX(-8deg);
+  }
+  14% {
+    opacity: 1;
+    clip-path: inset(-30px 72% -30px -30px);
+    filter: brightness(2.4) saturate(1.5);
+  }
+  22% {
+    opacity: 0.25;
+  }
+  30% {
+    opacity: 1;
+    clip-path: inset(-30px 40% -30px -30px);
+    filter: brightness(2.8);
+    transform: translateX(3px) skewX(5deg);
+  }
+  42% {
+    opacity: 0.55;
+  }
+  52% {
+    opacity: 1;
+    clip-path: inset(-30px -30px -30px -30px);
+    filter: brightness(2.1);
+    transform: translateX(-2px);
+  }
+  62% {
+    filter: brightness(1.2);
+    transform: none;
+  }
+  70% {
+    filter: brightness(2);
+    box-shadow:
+      0 0 0 1px var(--tag-accent),
+      0 0 26px 6px var(--tag-accent);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(-30px);
+    filter: none;
+    transform: none;
+  }
+}
+@keyframes gtSweep {
+  0% {
+    left: 0;
+    opacity: 1;
+  }
+  52% {
+    left: 100%;
+    opacity: 1;
+  }
+  62%,
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+@keyframes gtBolt {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  22% {
+    opacity: 0.15;
+  }
+  30% {
+    opacity: 1;
+  }
+  42% {
+    opacity: 0.3;
+  }
+  52% {
+    opacity: 0.9;
+  }
+  64%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal:not(.in) .skill-row .glitch-tag {
+    opacity: 1;
+  }
+  .reveal.in .skill-row .glitch-tag,
+  .reveal.in .skill-row .glitch-tag::before,
+  .reveal.in .skill-row .glitch-tag::after,
+  .gt-scan,
+  .gt-dot,
+  .gt-label::before,
+  .gt-label::after {
+    animation: none !important;
+  }
+}

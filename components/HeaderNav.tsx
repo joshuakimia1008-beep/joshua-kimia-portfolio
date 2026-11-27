@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import MotionLayer from "./MotionLayer";
 import ThemeToggle from "./ThemeToggle";
+import ThemeToggleMobile from "./ThemeToggleMobile";
 
 const links = [
   ["Home", "home"],
@@ -18,6 +19,14 @@ export default function HeaderNav({ resumeUrl }: { resumeUrl: string }) {
   const [active, setActive] = useState("home");
   const [focused, setFocused] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const navigateToSection = (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -43,6 +52,22 @@ export default function HeaderNav({ resumeUrl }: { resumeUrl: string }) {
 
     window.history.replaceState(null, "", `#${id}`);
   };
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    const onResize = () => {
+      if (window.innerWidth > 760) setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -73,7 +98,7 @@ export default function HeaderNav({ resumeUrl }: { resumeUrl: string }) {
     <>
       <MotionLayer />
 
-      <header className="focus-nav-header">
+      <header className={`focus-nav-header ${scrolled ? "is-scrolled" : ""}`}>
         <nav
           className={`focus-nav ${focused ? "has-focus" : ""} ${
             menuOpen ? "menu-is-open" : ""
@@ -137,9 +162,12 @@ export default function HeaderNav({ resumeUrl }: { resumeUrl: string }) {
             aria-controls="focus-mobile-navigation"
             onClick={() => setMenuOpen((open) => !open)}
           >
-            <span>{menuOpen ? "CLOSE" : "MENU"}</span>
+            <span className="focus-mobile-label">
+              {menuOpen ? "CLOSE" : "MENU"}
+            </span>
             <span className="focus-menu-icon" aria-hidden="true">
-              {menuOpen ? "−" : "+"}
+              <i />
+              <i />
             </span>
           </button>
 
@@ -156,14 +184,11 @@ export default function HeaderNav({ resumeUrl }: { resumeUrl: string }) {
                 href={`#${id}`}
                 tabIndex={menuOpen ? 0 : -1}
                 className={active === id ? "mobile-link-active" : ""}
+                style={{ ["--i" as string]: index }}
+                aria-current={active === id ? "location" : undefined}
                 onClick={(event) => navigateToSection(event, id)}
               >
-                <span className="mobile-link-number">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-
                 <span>{label}</span>
-                <span className="mobile-link-arrow">↗</span>
               </a>
             ))}
 
@@ -175,12 +200,22 @@ export default function HeaderNav({ resumeUrl }: { resumeUrl: string }) {
                 resumeUrl.startsWith("http") ? "noopener noreferrer" : undefined
               }
               download
+              tabIndex={menuOpen ? 0 : -1}
+              onClick={() => setMenuOpen(false)}
             >
               Download CV ↓
             </a>
           </div>
         </nav>
       </header>
+
+      <div
+        className={`focus-mobile-backdrop ${menuOpen ? "is-open" : ""}`}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+      />
+
+      <ThemeToggleMobile />
     </>
   );
 }
